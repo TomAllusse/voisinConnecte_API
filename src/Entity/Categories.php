@@ -19,6 +19,9 @@ class Categories
     #[ORM\Column(length: 7)]
     private ?string $color_hex = null;
 
+    #[ORM\Column(length: 50)]
+    private ?string $icon = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Categories
     public function setColorHex(string $color_hex): static
     {
         $this->color_hex = $color_hex;
+
+        return $this;
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(string $icon): static
+    {
+        $this->icon = $icon;
 
         return $this;
     }
