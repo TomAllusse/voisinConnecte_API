@@ -1,0 +1,10 @@
+<?php
+
+namespace App\Enum;
+
+enum Status_Announcement: string
+{
+    case Pending = 'pending';
+    case InProgress = 'in_progress';
+    case Done = 'done';
+}
