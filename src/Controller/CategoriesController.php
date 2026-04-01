@@ -35,7 +35,7 @@ final class CategoriesController extends AbstractController
 
         return $this->json([
             "status"=>"ok",
-            "message" => "categories ajouter",
+            "message" => "Categories ajouter",
             "result" => $categories
         ]);
     }
@@ -55,7 +55,7 @@ final class CategoriesController extends AbstractController
         if (!$categories) {
             return $this->json([
                 "status" => "error",
-                "message" => "Employé non trouvé"
+                "message" => "Categories non trouvé"
             ]);
         }
 
@@ -68,7 +68,7 @@ final class CategoriesController extends AbstractController
 
         return $this->json([
             "status"=>"ok",
-            "message" => "categories ajouter",
+            "message" => "Categories ajouter",
             "result" => $categories
         ]);
     }
@@ -82,7 +82,7 @@ final class CategoriesController extends AbstractController
         if (!$categories) {
             return $this->json([
                 "status" => "error",
-                "message" => "Employé non trouvé"
+                "message" => "Categories non trouvé"
             ]);
         }
 
@@ -91,7 +91,7 @@ final class CategoriesController extends AbstractController
 
         return $this->json([
             "status" => "ok",
-            "message" => "Employé supprimé avec succès"
+            "message" => "Categories supprimé avec succès"
         ]);
     }
 
@@ -105,14 +105,14 @@ final class CategoriesController extends AbstractController
 
             return $this->json([
                 "status" => "error",
-                "message" => "Aucun employé trouvé"
+                "message" => "Aucun categories trouvé"
             ]);
 
         } else {
 
             return $this->json([
                 "status" => "ok",
-                "message" => "Employés récupérés avec succès",
+                "message" => "Categories récupérés avec succès",
                 "result" => $categories
             ]);
 
