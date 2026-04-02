@@ -12,12 +12,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class CategoriesController extends AbstractController
 {
-    public function __construct(private CategoriesRepository $categoriesRepository){}
+    public function __construct(private CategoriesRepository $categoriesRepository, private AnnouncementsController $announcementsController){}
 
     #[Route('/api/categories', name: 'app_categories_add', methods: 'POST')]
     public function addCategories(Request $request, EntityManagerInterface $entityManager): Response
     {
-
         $data = json_decode($request->getContent(), true);
 
         if (!$data){
@@ -118,4 +117,29 @@ final class CategoriesController extends AbstractController
 
         }
     }
+
+    #[Route('/api/categories/tendency', name: 'app_categories_tendency', methods: 'GET')]
+    public function getCategoriesTendency(): Response
+    {
+        $announce = $this->announcementsRepository->createQueryBuilder('a')->select('a')->orderBy('a.created_at', 'DESC')->setMaxResults(5)->getQuery()->getArrayResult();
+
+        if (empty($announce)) {
+
+            return $this->json([
+                "status" => "error",
+                "message" => "Aucun annonces trouvé"
+            ]);
+
+        } else {
+
+            return $this->json([
+                "status" => "ok",
+                "message" => "Top 5 annonces récupérées avec succès",
+                "result" => $announce
+            ]);
+
+        }
+    }
+
+
 }

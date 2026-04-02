@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Announcements;
+use App\Enum\Status_Announcement;
+use App\Enum\Type_Unit;
+use function Symfony\Component\Clock\now;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class AnnouncementsController extends AbstractController
@@ -28,17 +31,18 @@ final class AnnouncementsController extends AbstractController
 
         $announce = new Announcements();
 
-        $announce->setIdUser($data["id_user"]);
+        /*$user = $this->getUser();*/
+
+        $announce->setIdUser(/*$user->getId()*/0);
         $announce->setIdCategory($data["id_category"]);
         $announce->setTitle($data["title"]);
         $announce->setDescription($data["description"]);
         $announce->setIsPaid($data["is_paid"]);
         $announce->setPrice($data["price"]);
-        $announce->setPriceUnit($data["price_unit"]);
-        $announce->setStatus($data["status"]);
-        $announce->setIsActive($data["is_active"]);
-        $announce->setCreatedAt($data["created_at"]);
-        $announce->setUpdatedAt($data["updated_at"]);
+        $announce->setPriceUnit(Type_Unit::from($data['price_unit']));
+        $announce->setStatus(Status_Announcement::Pending);
+        $announce->setIsActive(true);
+        $announce->setCreatedAt(now());
 
         $entityManager->persist($announce);
         $entityManager->flush();
@@ -60,7 +64,7 @@ final class AnnouncementsController extends AbstractController
             return $this->json(["status" => "error", "message" => "donnée vide"]);
         }
 
-        $announce = $this->AnnouncementsRepository->find($id);
+        $announce = $this->announcementsRepository->find($id);
 
         if (!$announce) {
             return $this->json([
@@ -95,7 +99,7 @@ final class AnnouncementsController extends AbstractController
     public function deleteCategories(int $id, EntityManagerInterface $entityManager): Response
     {
 
-        $announce = $this->AnnouncementsRepository->find($id);
+        $announce = $this->announcementsRepository->find($id);
 
         if (!$announce) {
             return $this->json([
@@ -117,7 +121,7 @@ final class AnnouncementsController extends AbstractController
     public function getCategoriesAll(): Response
     {
 
-        $announce = $this->AnnouncementsRepository->findAll();
+        $announce = $this->announcementsRepository->findAll();
 
         if (empty($announce)) {
 
@@ -141,7 +145,7 @@ final class AnnouncementsController extends AbstractController
     public function getCategoriesOneByUser(int $id, EntityManagerInterface $entityManager): Response
     {
 
-        $announce = $this->AnnouncementsRepository->findBy(['id_user' => $id],['created_at' => 'DESC']);
+        $announce = $this->announcementsRepository->findBy(['id_user' => $id],['created_at' => 'DESC']);
 
         if (empty($announce)) {
 
@@ -165,7 +169,7 @@ final class AnnouncementsController extends AbstractController
     public function getCategoriesOneByCategory(int $id, EntityManagerInterface $entityManager): Response
     {
 
-        $announce = $this->AnnouncementsRepository->findBy(['id_category' => $id],['created_at' => 'DESC']);
+        $announce = $this->announcementsRepository->findBy(['id_category' => $id],['created_at' => 'DESC']);
 
         if (empty($announce)) {
 
@@ -189,7 +193,7 @@ final class AnnouncementsController extends AbstractController
     public function getCountsAnnouncesByMonth(): Response
     {
 
-        $announce = $this->AnnouncementsRepository->createQueryBuilder('a')->select('YEAR(a.created_at) as year, MONTH(a.created_at) as month, COUNT(a.id) as count')->groupBy('year, month')->orderBy('year', 'DESC')->addOrderBy('month', 'DESC')->getQuery()->getArrayResult();
+        $announce = $this->announcementsRepository->createQueryBuilder('a')->select('YEAR(a.created_at) as year, MONTH(a.created_at) as month, COUNT(a.id) as count')->groupBy('year, month')->orderBy('year', 'DESC')->addOrderBy('month', 'DESC')->getQuery()->getArrayResult();
 
         if (empty($announce)) {
 
@@ -213,7 +217,7 @@ final class AnnouncementsController extends AbstractController
     public function getMemberActifsCountsAnnouncesByMonthTerminated(): Response
     {
 
-        $announce = $this->AnnouncementsRepository->createQueryBuilder('a')->select('YEAR(a.updated_at) as year, MONTH(a.updated_at) as month, COUNT(DISTINCT a.id_user) as count')->groupBy('year, month')->orderBy('year', 'DESC')->addOrderBy('month', 'DESC')->getQuery()->getArrayResult();
+        $announce = $this->announcementsRepository->createQueryBuilder('a')->select('YEAR(a.updated_at) as year, MONTH(a.updated_at) as month, COUNT(DISTINCT a.id_user) as count')->groupBy('year, month')->orderBy('year', 'DESC')->addOrderBy('month', 'DESC')->getQuery()->getArrayResult();
 
         if (empty($announce)) {
 
@@ -237,7 +241,7 @@ final class AnnouncementsController extends AbstractController
     public function getCountsAnnouncesByMonthTerminated(): Response
     {
 
-        $announce = $this->AnnouncementsRepository->createQueryBuilder('a')->select('YEAR(a.updated_at) as year, MONTH(a.updated_at) as month, COUNT(a.id) as count')->where('a.status = :status')->setParameter('status', 'terminated')->groupBy('year, month')->orderBy('year', 'DESC')->addOrderBy('month', 'DESC')->getQuery()->getArrayResult();
+        $announce = $this->announcementsRepository->createQueryBuilder('a')->select('YEAR(a.updated_at) as year, MONTH(a.updated_at) as month, COUNT(a.id) as count')->where('a.status = :status')->setParameter('status', 'terminated')->groupBy('year, month')->orderBy('year', 'DESC')->addOrderBy('month', 'DESC')->getQuery()->getArrayResult();
 
         if (empty($announce)) {
 
@@ -251,29 +255,6 @@ final class AnnouncementsController extends AbstractController
             return $this->json([
                 "status" => "ok",
                 "message" => "Annonces récupérés avec succès",
-                "result" => $announce
-            ]);
-
-        }
-    }
-
-    #[Route('/api/announces/top_tendency', name: 'app_announces_top_tendency', methods: 'GET')]
-    public function getTopTendencyAnnounces(): Response
-    {
-        $announce = $this->AnnouncementsRepository->createQueryBuilder('a')->select('a')->orderBy('a.created_at', 'DESC')->setMaxResults(5)->getQuery()->getArrayResult();
-
-        if (empty($announce)) {
-
-            return $this->json([
-                "status" => "error",
-                "message" => "Aucun annonces trouvé"
-            ]);
-
-        } else {
-
-            return $this->json([
-                "status" => "ok",
-                "message" => "Top 5 annonces récupérées avec succès",
                 "result" => $announce
             ]);
 

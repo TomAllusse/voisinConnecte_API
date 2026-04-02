@@ -16,11 +16,13 @@ class Announcements
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_user = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id')]
+    private ?Users $id_user = null;
 
-    #[ORM\Column]
-    private ?int $id_category = null;
+    #[ORM\ManyToOne(targetEntity: Categories::class)]
+    #[ORM\JoinColumn(name: 'id_category', referencedColumnName: 'id')]
+    private ?Categories $id_category = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -31,7 +33,7 @@ class Announcements
     #[ORM\Column]
     private ?bool $is_paid = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 2, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private ?string $price = null;
 
     #[ORM\Column(enumType: Type_Unit::class)]
@@ -46,7 +48,7 @@ class Announcements
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
     public function getId(): ?int
@@ -59,7 +61,7 @@ class Announcements
         return $this->id_user;
     }
 
-    public function setIdUser(int $id_user): static
+    public function setIdUser(?Users $id_user): static
     {
         $this->id_user = $id_user;
 
@@ -71,7 +73,7 @@ class Announcements
         return $this->id_category;
     }
 
-    public function setIdCategory(int $id_category): static
+    public function setIdCategory(?Categories $id_category): static
     {
         $this->id_category = $id_category;
 
