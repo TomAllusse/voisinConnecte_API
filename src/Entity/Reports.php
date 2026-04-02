@@ -34,7 +34,7 @@ class Reports
 
     #[ORM\ManyToOne(targetEntity: Users::class)]
     #[ORM\JoinColumn(name: 'resolved_by', referencedColumnName: 'id')]
-    private ?int $resolved_by = null;
+    private ?Users $resolved_by = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -44,7 +44,7 @@ class Reports
         return $this->id;
     }
 
-    public function getIdAnnouncement(): ?int
+    public function getIdAnnouncement(): ?Announcements
     {
         return $this->id_announcement;
     }
@@ -56,7 +56,7 @@ class Reports
         return $this;
     }
 
-    public function getIdReporter(): ?int
+    public function getIdReporter(): ?Users
     {
         return $this->id_reporter;
     }
@@ -104,7 +104,7 @@ class Reports
         return $this;
     }
 
-    public function getResolvedBy(): ?int
+    public function getResolvedBy(): ?Users
     {
         return $this->resolved_by;
     }

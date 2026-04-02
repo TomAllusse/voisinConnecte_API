@@ -40,7 +40,7 @@ class Responses
         return $this->id;
     }
 
-    public function getIdAnnouncement(): ?int
+    public function getIdAnnouncement(): ?Announcements
     {
         return $this->id_announcement;
     }
@@ -52,7 +52,7 @@ class Responses
         return $this;
     }
 
-    public function getIdResponder(): ?int
+    public function getIdResponder(): ?Users
     {
         return $this->id_responder;
     }

@@ -16,6 +16,26 @@ class CategoriesRepository extends ServiceEntityRepository
         parent::__construct($registry, Categories::class);
     }
 
+    public function findTendencyWithAnnouncements(): array
+    {
+        $firstDayOfMonth = new \DateTimeImmutable('first day of this month 00:00:00');
+        $lastDayOfMonth = new \DateTimeImmutable('last day of this month 23:59:59');
+
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.announcements', 'a')
+            ->select('c.id, c.name, c.color_hex, c.icon, COUNT(DISTINCT a.id) as total_announcements')
+            ->where('a.created_at BETWEEN :start AND :end')
+            ->andWhere('a.is_active = :active')
+            ->setParameter('start', $firstDayOfMonth)
+            ->setParameter('end', $lastDayOfMonth)
+            ->setParameter('active', true)
+            ->groupBy('c.id, c.name, c.color_hex, c.icon')
+            ->orderBy('total_announcements', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     //    /**
     //     * @return Categories[] Returns an array of Categories objects
     //     */

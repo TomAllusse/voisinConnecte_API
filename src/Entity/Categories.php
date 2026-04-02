@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CategoriesRepository;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
@@ -11,16 +13,24 @@ class Categories
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['categories:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['categories:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 7)]
+    #[Groups(['categories:read'])]
     private ?string $color_hex = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['categories:read'])]
     private ?string $icon = null;
+
+    #[ORM\OneToMany(targetEntity: Announcements::class, mappedBy: 'id_category')]
+    #[Groups(['categories:read'])]
+    private Collection $announcements;
 
     public function getId(): ?int
     {
@@ -61,5 +71,10 @@ class Categories
         $this->icon = $icon;
 
         return $this;
+    }
+
+    public function getAnnouncements(): Collection
+    {
+        return $this->announcements;
     }
 }

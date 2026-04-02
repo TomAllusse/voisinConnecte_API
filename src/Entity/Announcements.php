@@ -7,6 +7,8 @@ use App\Enum\Type_Unit;
 use App\Repository\AnnouncementsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: AnnouncementsRepository::class)]
 class Announcements
@@ -14,41 +16,52 @@ class Announcements
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Users::class)]
     #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id')]
     private ?Users $id_user = null;
 
-    #[ORM\ManyToOne(targetEntity: Categories::class)]
+    #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'announcements')]
     #[ORM\JoinColumn(name: 'id_category', referencedColumnName: 'id')]
+    #[Ignore]
     private ?Categories $id_category = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?bool $is_paid = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $price = null;
 
     #[ORM\Column(enumType: Type_Unit::class)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?Type_Unit $price_unit = null;
 
     #[ORM\Column(enumType: Status_Announcement::class)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?Status_Announcement $status = null;
 
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?bool $is_active = null;
 
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     public function getId(): ?int
@@ -56,7 +69,7 @@ class Announcements
         return $this->id;
     }
 
-    public function getIdUser(): ?int
+    public function getIdUser(): ?Users
     {
         return $this->id_user;
     }
@@ -68,7 +81,7 @@ class Announcements
         return $this;
     }
 
-    public function getIdCategory(): ?int
+    public function getIdCategory(): ?Categories
     {
         return $this->id_category;
     }

@@ -26,6 +26,10 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: false
+        dql:
+            datetime_functions:
+                year: DoctrineExtensions\Query\Postgresql\Year
+                month: DoctrineExtensions\Query\Postgresql\Month
 
 when@test:
     doctrine:

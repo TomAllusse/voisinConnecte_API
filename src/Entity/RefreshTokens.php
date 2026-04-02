@@ -34,7 +34,7 @@ class RefreshTokens
         return $this->id;
     }
 
-    public function getIdUser(): ?int
+    public function getIdUser(): ?Users
     {
         return $this->id_user;
     }

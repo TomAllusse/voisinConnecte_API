@@ -6,9 +6,11 @@ use App\Enum\Role;
 use App\Repository\UsersRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+// Import nécessaire pour la sécurité Symfony
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-class Users
+class Users implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,20 +35,29 @@ class Users
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $bio = null;
 
-    #[ORM\Column(length: 512, nullable: true)]
-    private ?string $avatar_path = null;
+    #[ORM\Column(length: 512)]
+    private ?string $avatar_path = "https://api.dicebear.com/7.x/adventurer/svg?seed=Adam";
 
     #[ORM\Column(enumType: Role::class)]
     private ?Role $role = null;
 
     #[ORM\Column]
-    private ?bool $is_Banned = null;
+    private ?bool $is_Banned = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
+
+    /**
+     * Cette méthode est requise par PasswordAuthenticatedUserInterface.
+     * Elle indique à Symfony quel champ utiliser pour le mot de passe.
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password_hash;
+    }
 
     public function getId(): ?int
     {
@@ -178,7 +189,7 @@ class Users
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
 
