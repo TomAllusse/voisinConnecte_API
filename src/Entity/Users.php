@@ -6,47 +6,59 @@ use App\Enum\Role;
 use App\Repository\UsersRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-class Users
+class Users implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['announcements:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['announcements:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password_hash = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['announcements:read'])]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['announcements:read'])]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['announcements:read'])]
     private ?string $city = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $bio = null;
 
-    #[ORM\Column(length: 512, nullable: true)]
-    private ?string $avatar_path = null;
+    #[ORM\Column(length: 512)]
+    private ?string $avatar_path = "https://api.dicebear.com/7.x/adventurer/svg?seed=Adam";
 
     #[ORM\Column(enumType: Role::class)]
     private ?Role $role = null;
 
     #[ORM\Column]
-    private ?bool $is_Banned = null;
+    private ?bool $is_Banned = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
+
+    public function getPassword(): ?string
+    {
+        return $this->password_hash;
+    }
 
     public function getId(): ?int
     {
@@ -178,7 +190,7 @@ class Users
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
 

@@ -15,11 +15,13 @@ class Reports
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_announcement = null;
+    #[ORM\ManyToOne(targetEntity: Announcements::class)]
+    #[ORM\JoinColumn(name: 'id_announcement', referencedColumnName: 'id')]
+    private ?Announcements $id_announcement = null;
 
-    #[ORM\Column]
-    private ?int $id_reporter = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'id_reporter', referencedColumnName: 'id')]
+    private ?Users $id_reporter = null;
 
     #[ORM\Column(enumType: Report_Reason::class)]
     private ?Report_Reason $reason = null;
@@ -30,8 +32,9 @@ class Reports
     #[ORM\Column]
     private ?bool $resolved = null;
 
-    #[ORM\Column]
-    private ?int $resolved_by = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'resolved_by', referencedColumnName: 'id')]
+    private ?Users $resolved_by = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -41,24 +44,24 @@ class Reports
         return $this->id;
     }
 
-    public function getIdAnnouncement(): ?int
+    public function getIdAnnouncement(): ?Announcements
     {
         return $this->id_announcement;
     }
 
-    public function setIdAnnouncement(int $id_announcement): static
+    public function setIdAnnouncement(?Announcements $id_announcement): static
     {
         $this->id_announcement = $id_announcement;
 
         return $this;
     }
 
-    public function getIdReporter(): ?int
+    public function getIdReporter(): ?Users
     {
         return $this->id_reporter;
     }
 
-    public function setIdReporter(int $id_reporter): static
+    public function setIdReporter(?Users $id_reporter): static
     {
         $this->id_reporter = $id_reporter;
 
@@ -101,12 +104,12 @@ class Reports
         return $this;
     }
 
-    public function getResolvedBy(): ?int
+    public function getResolvedBy(): ?Users
     {
         return $this->resolved_by;
     }
 
-    public function setResolvedBy(int $resolved_by): static
+    public function setResolvedBy(?Users $resolved_by): static
     {
         $this->resolved_by = $resolved_by;
 

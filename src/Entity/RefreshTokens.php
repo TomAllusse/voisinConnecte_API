@@ -13,8 +13,9 @@ class RefreshTokens
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_user = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id')]
+    private ?Users $id_user = null;
 
     #[ORM\Column(length: 512)]
     private ?string $token_hash = null;
@@ -33,12 +34,12 @@ class RefreshTokens
         return $this->id;
     }
 
-    public function getIdUser(): ?int
+    public function getIdUser(): ?Users
     {
         return $this->id_user;
     }
 
-    public function setIdUser(int $id_user): static
+    public function setIdUser(?Users $id_user): static
     {
         $this->id_user = $id_user;
 

@@ -15,11 +15,13 @@ class Responses
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_announcement = null;
+    #[ORM\ManyToOne(targetEntity: Announcements::class)]
+    #[ORM\JoinColumn(name: 'id_announcement', referencedColumnName: 'id')]
+    private ?Announcements $id_announcement = null;
 
-    #[ORM\Column]
-    private ?int $id_responder = null;
+    #[ORM\ManyToOne(targetEntity: Categories::class)]
+    #[ORM\JoinColumn(name: 'id_responder', referencedColumnName: 'id')]
+    private ?Users $id_responder = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $message = null;
@@ -38,24 +40,24 @@ class Responses
         return $this->id;
     }
 
-    public function getIdAnnouncement(): ?int
+    public function getIdAnnouncement(): ?Announcements
     {
         return $this->id_announcement;
     }
 
-    public function setIdAnnouncement(int $id_announcement): static
+    public function setIdAnnouncement(?Announcements $id_announcement): static
     {
         $this->id_announcement = $id_announcement;
 
         return $this;
     }
 
-    public function getIdResponder(): ?int
+    public function getIdResponder(): ?Users
     {
         return $this->id_responder;
     }
 
-    public function setIdResponder(int $id_responder): static
+    public function setIdResponder(?Users $id_responder): static
     {
         $this->id_responder = $id_responder;
 

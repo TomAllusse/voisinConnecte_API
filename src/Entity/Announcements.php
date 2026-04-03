@@ -7,6 +7,7 @@ use App\Enum\Type_Unit;
 use App\Repository\AnnouncementsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnnouncementsRepository::class)]
 class Announcements
@@ -14,39 +15,58 @@ class Announcements
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_user = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id')]
+    #[Groups(['announcements:read'])]
+    private ?Users $id_user = null;
 
-    #[ORM\Column]
-    private ?int $id_category = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'id_buyer', referencedColumnName: 'id', nullable: true)]
+    #[Groups(['announcements:read'])]
+    private ?Users $id_buyer = null;
+
+    #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'announcements')]
+    #[ORM\JoinColumn(name: 'id_category', referencedColumnName: 'id')]
+    #[Groups(['announcements:read'])]
+    private ?Categories $id_category = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?bool $is_paid = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 2, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $price = null;
 
     #[ORM\Column(enumType: Type_Unit::class)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?Type_Unit $price_unit = null;
 
     #[ORM\Column(enumType: Status_Announcement::class)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?Status_Announcement $status = null;
 
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?bool $is_active = null;
 
     #[ORM\Column]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     public function getId(): ?int
@@ -54,24 +74,36 @@ class Announcements
         return $this->id;
     }
 
-    public function getIdUser(): ?int
+    public function getIdUser(): ?Users
     {
         return $this->id_user;
     }
 
-    public function setIdUser(int $id_user): static
+    public function setIdUser(?Users $id_user): static
     {
         $this->id_user = $id_user;
 
         return $this;
     }
+/*
+    public function getIdBuyer(): ?Users
+    {
+        return $this->id_buyer;
+    }
 
-    public function getIdCategory(): ?int
+    public function setIdBuyer(?Users $id_buyer): static
+    {
+        $this->id_buyer = $id_buyer;
+
+        return $this;
+    }*/
+
+    public function getIdCategory(): ?Categories
     {
         return $this->id_category;
     }
 
-    public function setIdCategory(int $id_category): static
+    public function setIdCategory(?Categories $id_category): static
     {
         $this->id_category = $id_category;
 
