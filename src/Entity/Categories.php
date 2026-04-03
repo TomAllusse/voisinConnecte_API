@@ -17,19 +17,18 @@ class Categories
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['categories:read'])]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 7)]
-    #[Groups(['categories:read'])]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $color_hex = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['categories:read'])]
+    #[Groups(['categories:read', 'announcements:read'])]
     private ?string $icon = null;
 
     #[ORM\OneToMany(targetEntity: Announcements::class, mappedBy: 'id_category')]
-    #[Groups(['categories:read'])]
     private Collection $announcements;
 
     public function getId(): ?int

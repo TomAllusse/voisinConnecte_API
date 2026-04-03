@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260402094327 extends AbstractMigration
+final class Version20260403021920 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,12 @@ final class Version20260402094327 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE announcements ALTER price TYPE NUMERIC(10, 2)');
+        $this->addSql('ALTER TABLE announcements ADD CONSTRAINT FK_F422A9D6A151E83 FOREIGN KEY (id_buyer) REFERENCES users (id) NOT DEFERRABLE');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE announcements ALTER price TYPE NUMERIC(2, 2)');
+        $this->addSql('ALTER TABLE announcements DROP CONSTRAINT FK_F422A9D6A151E83');
     }
 }

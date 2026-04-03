@@ -15,6 +15,26 @@ class RefreshTokenController extends AbstractController
 {
     public function __construct(private RefreshTokensRepository $refreshTokensRepository) {}
 
+    public function verifyToken(Request $request): ?Users
+    {
+        $authHeader = $request->headers->get('Authorization');
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return null;
+        }
+
+        $tokenValue = substr($authHeader, 7);
+        $token = $this->refreshTokensRepository->findOneBy([
+            'token_hash' => $tokenValue,
+            'revoked' => false
+        ]);
+
+        if (!$token || $token->getExpiredAt() < new \DateTimeImmutable()) {
+            return null;
+        }
+
+        return $token->getIdUser();
+    }
+
     public function generateToken(Users $user, EntityManagerInterface $em): string
     {
         $tokenString = bin2hex(random_bytes(32));
@@ -46,13 +66,39 @@ class RefreshTokenController extends AbstractController
         }
 
         $user = $token->getIdUser();
-        $token->setRevoked(true); // On révoque l'ancien
+        $token->setRevoked(true);
 
         $newToken = $this->generateToken($user, $em);
 
         return $this->json([
             'status' => 'ok',
             'result' => ['token' => $newToken]
+        ]);
+    }
+
+    #[Route('/api/user/token/check', name: 'app_token_check', methods: ['GET'])]
+    public function check(Request $request): Response
+    {
+        $user = $this->verifyToken($request);
+
+        if (!$user) {
+            return $this->json(["status" => "error", "message" => "Unauthorized"], 401);
+        }
+
+        return $this->json([
+            'status' => 'ok',
+            'result' => [
+                'user' => [
+                    'id'         => $user->getId(),
+                    'email'      => $user->getEmail(),
+                    'first_name' => $user->getFirstName(),
+                    'last_name'  => $user->getLastName(),
+                    'city'       => $user->getCity(),
+                    'bio'        => $user->getBio(),
+                    'avatar_path'=> $user->getAvatarPath(),
+                    'role'       => $user->getRole(),
+                ]
+            ]
         ]);
     }
 }

@@ -6,8 +6,8 @@ use App\Enum\Role;
 use App\Repository\UsersRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-// Import nécessaire pour la sécurité Symfony
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 class Users implements PasswordAuthenticatedUserInterface
@@ -15,21 +15,26 @@ class Users implements PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['announcements:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['announcements:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password_hash = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['announcements:read'])]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['announcements:read'])]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['announcements:read'])]
     private ?string $city = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -50,10 +55,6 @@ class Users implements PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    /**
-     * Cette méthode est requise par PasswordAuthenticatedUserInterface.
-     * Elle indique à Symfony quel champ utiliser pour le mot de passe.
-     */
     public function getPassword(): ?string
     {
         return $this->password_hash;

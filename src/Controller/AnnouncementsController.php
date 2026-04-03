@@ -242,4 +242,38 @@ final class AnnouncementsController extends AbstractController
 
         return $this->json(["status" => "ok", "result" => $count]);
     }
+
+    #[Route('/api/announces/stats/{id}', name: 'app_announces_total_count', methods: ['GET'])]
+    public function getCountsAnnouncesByUser(int $id): Response
+    {
+        $count = $this->announcementsRepository->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.id_user = :idUser')
+            ->setParameter('idUser', $id)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $this->json([
+            "status" => "ok",
+            "result" => (int)$count
+        ]);
+    }
+
+    #[Route('/api/announces/stats/terminated/{id}', name: 'app_announces_terminated_count', methods: ['GET'])]
+    public function getCountsAnnouncesByUserTerminated(int $id): Response
+    {
+        $count = $this->announcementsRepository->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.id_user = :idUser')
+            ->andWhere('a.status = :status')
+            ->setParameter('idUser', $id)
+            ->setParameter('status', 'terminated')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $this->json([
+            "status" => "ok",
+            "result" => (int)$count
+        ]);
+    }
 }

@@ -33,7 +33,6 @@ final class UsersController extends AbstractController
         $newUser->setLastName($data['nom'] ?? '');
         $newUser->setCity($data['ville'] ?? null);
 
-        // Valeurs obligatoires
         $newUser->setRole(Role::User);
         $newUser->setIsBanned(false);
         $newUser->setCreatedAt(new \DateTimeImmutable());
@@ -57,9 +56,13 @@ final class UsersController extends AbstractController
     #[Route('/api/user/login', name: 'app_auth_login', methods: ['POST'])]
     public function login(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
     {
-        $data = json_decode($request->getContent(), true);
-        $user = $this->usersRepository->findOneBy(['email' => $data['email'] ?? '']);
 
+        $data = json_decode($request->getContent(), true);
+
+        $user = $this->usersRepository->findOneBy(['email' => $data['email'] ?? '']);
+        //var_dump($user);
+        //var_dump($hasher->hashPassword($user, $data['password']));
+        //var_dump($hasher->isPasswordValid($user, $data['password']));
         if (!$user || !$hasher->isPasswordValid($user, $data['password'])) {
             return $this->json(["status" => "error", "message" => "Invalid credentials"], 401);
         }
@@ -72,7 +75,27 @@ final class UsersController extends AbstractController
                 'userId' => $user->getId(),
                 'token' => $token,
                 'email' => $user->getEmail(),
+                'role'   => $user->getRole()
             ]
         ]);
+    }
+
+    #[Route('/api/user/update/{id}', name: 'app_user_update', methods: ['PUT'])]
+    public function update(int $id, Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->usersRepository->find($id);
+        if (!$user) return $this->json(['message' => 'User not found'], 404);
+
+        $data = json_decode($request->getContent(), true);
+
+        $user->setFirstName($data['prenom'] ?? $user->getFirstName());
+        $user->setLastName($data['nom'] ?? $user->getLastName());
+        $user->setCity($data['ville'] ?? $user->getCity());
+        $user->setEmail($data['email'] ?? $user->getEmail());
+        $user->setUpdatedAt(new \DateTimeImmutable());
+
+        $em->flush();
+
+        return $this->json(['status' => 'ok', 'message' => 'Profil mis à jour']);
     }
 }

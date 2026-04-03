@@ -8,7 +8,6 @@ use App\Repository\AnnouncementsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: AnnouncementsRepository::class)]
 class Announcements
@@ -21,11 +20,17 @@ class Announcements
 
     #[ORM\ManyToOne(targetEntity: Users::class)]
     #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id')]
+    #[Groups(['announcements:read'])]
     private ?Users $id_user = null;
+
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'id_buyer', referencedColumnName: 'id', nullable: true)]
+    #[Groups(['announcements:read'])]
+    private ?Users $id_buyer = null;
 
     #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'announcements')]
     #[ORM\JoinColumn(name: 'id_category', referencedColumnName: 'id')]
-    #[Ignore]
+    #[Groups(['announcements:read'])]
     private ?Categories $id_category = null;
 
     #[ORM\Column(length: 255)]
@@ -80,6 +85,18 @@ class Announcements
 
         return $this;
     }
+/*
+    public function getIdBuyer(): ?Users
+    {
+        return $this->id_buyer;
+    }
+
+    public function setIdBuyer(?Users $id_buyer): static
+    {
+        $this->id_buyer = $id_buyer;
+
+        return $this;
+    }*/
 
     public function getIdCategory(): ?Categories
     {

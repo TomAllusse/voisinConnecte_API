@@ -100,7 +100,7 @@ final class CategoriesController extends AbstractController
     #[Route('/api/categories', name: 'app_categories_all', methods: 'GET')]
     public function getCategoriesAll(): Response
     {
-        $categories = $this->categoriesRepository->findAll();
+        $categories = $this->categoriesRepository->findBy([], ['id' => 'ASC']);
 
         if (empty($categories)) {
             return $this->json(
